@@ -17,6 +17,7 @@ namespace GoodbyeService
 
         public static async Task Main()
         {
+            Configuration = Configure();
             var busControl = Bus.Factory.CreateUsingAzureServiceBus(serviceBus =>
             {
                 serviceBus.Host(ServiveBusConnectionString);
@@ -50,7 +51,7 @@ namespace GoodbyeService
                   .AddUserSecrets<Program>();
 
             Configuration = configurationBuilder.Build();
-            ServiveBusConnectionString = Configuration["ServiceBusHost"];
+            ServiveBusConnectionString = Configuration["ServiceBusConnection"];
 
             return Configuration;
         }

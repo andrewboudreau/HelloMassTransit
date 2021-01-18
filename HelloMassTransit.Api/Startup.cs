@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HelloMassTransit.Api.Consumers;
+using HelloService.Contracts.Events;
+using HelloService.Contracts.Requests;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace HelloMassTransit.Api
 {
+    //https://daveabrock.com/2020/12/04/migrate-mvc-to-route-to-code
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -32,7 +36,7 @@ namespace HelloMassTransit.Api
                     cfg.AddConsumersFromNamespaceContaining<DocumentOperationCompletedConsumer>();
                     cfg.UsingAzureServiceBus((context, cfg) =>
                     {
-                        cfg.Host(Configuration["ServiceBusHost"]);
+                        cfg.Host(Configuration["ServiceBusConnection"]);
                         cfg.ConfigureEndpoints(context);
                     });
                 })
@@ -60,6 +64,41 @@ namespace HelloMassTransit.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+
+                endpoints.MapGet("/api/hello/{id:int}/{color}", async context =>
+                {
+                    var bus = context.RequestServices.GetRequiredService<IBus>();
+
+                    var id = int.Parse(context.Request.RouteValues["id"].ToString());
+                    var color = context.Request.RouteValues["color"].ToString();
+
+                    await bus.Publish<DocumentOperationCommand>(new
+                    {
+                        DocumentIdentifier = id,
+                        Settings = new
+                        {
+                            AnotherBooleanValue = true,
+                            BackgroundColors = color
+                        }
+                    });
+                });
+
+                endpoints.MapGet("/api/hello/complete/{id:int}/{data}", async context =>
+                {
+                    var bus = context.RequestServices.GetRequiredService<IBus>();
+
+                    var id = int.Parse(context.Request.RouteValues["id"].ToString());
+                    var data = context.Request.RouteValues["data"].ToString();
+
+                    await bus.Publish<DocumentOperationCompleted>(new
+                    {
+                        CompleteValue = id,
+                        OperationCompletedData = new
+                        {
+                            OperationOutputData = data
+                        }
+                    });
+                });
             });
         }
     }

@@ -39,7 +39,7 @@ namespace HelloService
                         return (input[0], input[1]);
                     });
 
-                    if ("quit".Equals(value, StringComparison.OrdinalIgnoreCase))
+                    if ("quit".Equals(command, StringComparison.OrdinalIgnoreCase))
                         break;
 
                     var tasks = new List<Task>();
@@ -88,7 +88,7 @@ namespace HelloService
                   .AddUserSecrets<Program>();
 
             Configuration = configurationBuilder.Build();
-            ServiveBusConnectionString = Configuration["ServiceBusHost"];
+            ServiveBusConnectionString = Configuration["ServiceBusConnection"];
 
             return Configuration;
         }
