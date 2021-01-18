@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HelloService.Contracts.Events;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 
 namespace HelloService
 {
-    class Program
+    public class Program
     {
-        const string ServiceBusHost = "{ServiceBusConnectionString}";
+        public static IConfigurationRoot Configuration;
+
+        public static string ServiveBusConnectionString;
 
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
-            var busControl = Bus.Factory.CreateUsingAzureServiceBus(cfg => cfg.Host(ServiceBusHost));
+            Configuration = Configure();
+            var busControl = Bus.Factory.CreateUsingAzureServiceBus(cfg => cfg.Host(ServiveBusConnectionString));
 
             var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             int counter = 0;
@@ -73,6 +77,20 @@ namespace HelloService
             {
                 await busControl.StopAsync();
             }
+        }
+
+        private static IConfigurationRoot Configure()
+        {
+            var configurationBuilder = new ConfigurationBuilder()
+                  .SetBasePath(Directory.GetCurrentDirectory())
+                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                  .AddEnvironmentVariables()
+                  .AddUserSecrets<Program>();
+
+            Configuration = configurationBuilder.Build();
+            ServiveBusConnectionString = Configuration["ServiceBusHost"];
+
+            return Configuration;
         }
     }
 }

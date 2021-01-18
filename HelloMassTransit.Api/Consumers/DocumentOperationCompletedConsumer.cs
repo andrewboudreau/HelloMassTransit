@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using HelloService.Contracts.Events;
 using MassTransit;
 
-namespace HelloMassTransit.Consumers
+namespace HelloMassTransit.Api.Consumers
 {
     public class DocumentOperationCompletedConsumer
         : IConsumer<DocumentOperationCompleted>

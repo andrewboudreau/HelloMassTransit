@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace HelloMassTransit
+namespace HelloMassTransit.Api
 {
     public class Program
     {
