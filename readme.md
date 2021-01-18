@@ -1,4 +1,4 @@
-#A HelloWorld to MassTransit. Instead of Order we consider Document and the operations which can be performed upon it.
+# HelloWorld to MassTransit. Instead of Order we consider Document and the operations which can be performed upon it.
 An example that explores just the messaging parts of a system. Provides a sandbox for exploring the workings of [MassTransit](https://masstransit-project.com/) and how it works with Azure ServiceBus.
 
 # Documents
